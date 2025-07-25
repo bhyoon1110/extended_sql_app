@@ -20,7 +20,6 @@ def index():
 @app.route('/run_query', methods=['POST'])
 def run_query():
     qtype = request.form['qtype']
-    # 각 버튼마다 미리 정의된 SQL
     queries = {
         'set_union': """
             SELECT name FROM employees WHERE dept_id=2

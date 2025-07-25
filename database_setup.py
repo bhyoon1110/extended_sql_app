@@ -6,7 +6,6 @@ import random
 conn = sqlite3.connect('app.db')
 cur = conn.cursor()
 
-# 테이블 생성
 cur.executescript("""
 DROP TABLE IF EXISTS departments;
 DROP TABLE IF EXISTS employees;
@@ -34,7 +33,6 @@ CREATE TABLE sales (
 );
 """)
 
-# 샘플 데이터 삽입
 departments = [(1, 'HR'), (2, 'Engineering'), (3, 'Sales')]
 employees = [
     (1, 'Alice', 2, 85000),
@@ -46,7 +44,6 @@ employees = [
 cur.executemany("INSERT INTO departments VALUES (?, ?)", departments)
 cur.executemany("INSERT INTO employees VALUES (?, ?, ?, ?)", employees)
 
-# Sales: 최근 30일치 랜덤 매출
 base = date.today() - timedelta(days=30)
 sales = []
 for emp_id in range(1,6):
