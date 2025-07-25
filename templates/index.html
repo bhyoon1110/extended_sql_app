@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Complex SQL Queries</h2>
+<form action="/run_query" method="post">
+  <div class="row">
+    {% for key,label in {
+      'set_union':'Set UNION', 'set_intersect':'Set INTERSECT', 'set_except':'Set EXCEPT',
+      'set_membership':'Set Membership (IN)', 'set_comparison':'Set Comparison (ALL)',
+      'with_subquery':'WITH Subquery', 'advanced_agg':'Advanced Aggregates (ROLLUP)',
+      'olap':'OLAP (Window Functions)'
+    }.items() %}
+    <div class="col-md-3 mb-3">
+      <button name="qtype" value="{{key}}" class="btn btn-outline-secondary w-100">{{ label }}</button>
+    </div>
+    {% endfor %}
+  </div>
+</form>
+{% endblock %}
