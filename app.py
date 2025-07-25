@@ -40,9 +40,18 @@ def run_query():
             SELECT * FROM employees
             WHERE dept_id IN (SELECT id FROM departments WHERE name IN ('HR','Sales'));
         """,
-        'set_comparison': """
-            SELECT * FROM employees
-            WHERE salary > ALL (SELECT AVG(salary) FROM employees GROUP BY dept_id);
+            'set_comparison': """
+            -- Find employees whose salary exceeds every department’s average
+            SELECT *
+            FROM employees
+            WHERE salary > (
+            SELECT MAX(avg_salary)
+            FROM (
+                SELECT AVG(salary) AS avg_salary
+                FROM employees
+                GROUP BY dept_id
+            )
+            );
         """,
         'with_subquery': """
             WITH dept_sales AS (
@@ -53,15 +62,29 @@ def run_query():
             SELECT d.name, ds.total_sales
             FROM dept_sales ds JOIN departments d ON ds.dept_id=d.id;
         """,
-        'advanced_agg': """
-            SELECT dept_id,
-                   SUM(s.amount) AS dept_total,
-                   AVG(s.amount) AS avg_sale,
-                   COUNT(*) AS sale_count
-            FROM sales s JOIN employees e ON s.emp_id=e.id
-            GROUP BY dept_id
-            WITH ROLLUP;
+            'advanced_agg': """
+            -- Department subtotals
+            SELECT
+            e.dept_id,
+            SUM(s.amount)   AS dept_total,
+            AVG(s.amount)   AS avg_sale,
+            COUNT(*)        AS sale_count
+            FROM sales s
+            JOIN employees e ON s.emp_id = e.id
+            GROUP BY e.dept_id
+
+            UNION ALL
+
+            -- Grand total across all departments
+            SELECT
+            NULL            AS dept_id,
+            SUM(s.amount),
+            AVG(s.amount),
+            COUNT(*)
+            FROM sales s
+            JOIN employees e ON s.emp_id = e.id;
         """,
+
         'olap': """
             SELECT
               e.name,
